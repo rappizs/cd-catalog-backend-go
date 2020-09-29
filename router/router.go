@@ -1,10 +1,10 @@
 package router
 
 import (
-	"cd-catalog-backend-go/artist"
 	"cd-catalog-backend-go/config"
-	"cd-catalog-backend-go/disc"
-	"cd-catalog-backend-go/style"
+	"cd-catalog-backend-go/models/artist"
+	"cd-catalog-backend-go/models/disc"
+	"cd-catalog-backend-go/models/style"
 	"fmt"
 	"log"
 	"net/http"

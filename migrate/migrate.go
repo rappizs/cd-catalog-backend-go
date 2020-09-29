@@ -1,10 +1,10 @@
 package migrate
 
 import (
-	"cd-catalog-backend-go/artist"
 	"cd-catalog-backend-go/database"
-	"cd-catalog-backend-go/disc"
-	"cd-catalog-backend-go/style"
+	"cd-catalog-backend-go/models/artist"
+	"cd-catalog-backend-go/models/disc"
+	"cd-catalog-backend-go/models/style"
 )
 
 //All migrates all structs to the db
