@@ -1,8 +1,7 @@
-package controllers
+package disc
 
 import (
 	"cd-catalog-backend-go/database"
-	"cd-catalog-backend-go/structs"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -12,11 +11,18 @@ import (
 	"gorm.io/gorm"
 )
 
-//GetAllDisc returns every disc record
-func GetAllDisc(w http.ResponseWriter, r *http.Request) {
+var db *gorm.DB
+
+//Init gets the db interface from database package
+func Init() {
+	db = database.GetDBInterface()
+}
+
+//GetAll returns every record
+func GetAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	discs := []structs.Disc{}
-	result := database.DB.Find(&discs)
+	discs := []Disc{}
+	result := db.Find(&discs)
 	if result.Error != nil {
 		//TODO error handling
 		w.WriteHeader(500)
@@ -25,13 +31,13 @@ func GetAllDisc(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(discs)
 }
 
-//GetDisc returns a disc by id
-func GetDisc(w http.ResponseWriter, r *http.Request) {
+//GetByID returns a record by id
+func GetByID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
-	disc := structs.Disc{}
+	disc := Disc{}
 	id := params["id"]
-	err := database.DB.Where("id = ?", id).First(&disc).Error
+	err := db.Where("id = ?", id).First(&disc).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			w.WriteHeader(404)
@@ -43,24 +49,24 @@ func GetDisc(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(disc)
 }
 
-//CreateDisc creates a disc
-func CreateDisc(w http.ResponseWriter, r *http.Request) {
+//Create creates a record
+func Create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	disc := structs.Disc{}
+	disc := Disc{}
 	json.NewDecoder(r.Body).Decode(&disc)
 	//TODO validation
 	disc.ID = uuid.NewV4()
-	database.DB.Create(disc)
+	db.Create(disc)
 	json.NewEncoder(w).Encode(disc)
 }
 
-//UpdateDisc updates a disc by id
-func UpdateDisc(w http.ResponseWriter, r *http.Request) {
+//Update updates a record
+func Update(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	disc := structs.Disc{}
+	disc := Disc{}
 	params := mux.Vars(r)
 	id := params["id"]
-	err := database.DB.Where("id = ?", id).First(&disc).Error
+	err := db.Where("id = ?", id).First(&disc).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			w.WriteHeader(404)
@@ -70,19 +76,19 @@ func UpdateDisc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//TODO validations
-	updatedDisc := structs.Disc{}
+	updatedDisc := Disc{}
 	json.NewDecoder(r.Body).Decode(&updatedDisc)
-	database.DB.Model(&disc).Updates(&updatedDisc)
-	database.DB.Where("id = ?", id).First(&disc)
+	db.Model(&disc).Updates(&updatedDisc)
+	db.Where("id = ?", id).First(&disc)
 	json.NewEncoder(w).Encode(disc)
 }
 
-//DeleteDisc deletes a disc by  id
-func DeleteDisc(w http.ResponseWriter, r *http.Request) {
-	disc := structs.Disc{}
+//Delete deletes a record
+func Delete(w http.ResponseWriter, r *http.Request) {
+	disc := Disc{}
 	params := mux.Vars(r)
 	id := params["id"]
-	err := database.DB.Where("id = ?", id).First(&disc).Error
+	err := db.Where("id = ?", id).First(&disc).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			w.WriteHeader(404)
@@ -91,6 +97,6 @@ func DeleteDisc(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	database.DB.Delete(&disc)
+	db.Delete(&disc)
 	w.WriteHeader(204)
 }
