@@ -1,4 +1,4 @@
-package main
+package structs
 
 import uuid "github.com/satori/go.uuid"
 
@@ -24,7 +24,6 @@ type Style struct {
 	Base
 	Name uint `json:"name" gorm:"unique"`
 }
-
 
 //Base contains common columns for all structs
 type Base struct {
