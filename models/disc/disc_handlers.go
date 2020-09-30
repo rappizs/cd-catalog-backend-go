@@ -1,10 +1,12 @@
 package disc
 
 import (
+	"cd-catalog-backend-go/common"
 	"cd-catalog-backend-go/database"
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
@@ -21,14 +23,45 @@ func Init() {
 //GetAll returns every record
 func GetAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	discs := []Disc{}
-	result := db.Find(&discs)
-	if result.Error != nil {
-		//TODO error handling
-		w.WriteHeader(500)
+	searchValue := r.FormValue("search-value")
+	orderBy := r.FormValue("order-by")
+	orderType := r.FormValue("type")
+
+	order := common.OrderBy(orderBy, orderType)
+	pagination, err := common.Paginate(r)
+	if err != nil {
+		w.WriteHeader(400)
 		return
 	}
-	json.NewEncoder(w).Encode(discs)
+
+	discs := []Disc{}
+	var result *gorm.DB = nil
+	if _, err := strconv.Atoi(searchValue); err == nil {
+		result = db.Where("year = ?", searchValue).
+			Or("song_count = ?", searchValue).
+			Scopes(order, pagination).
+			Find(&discs)
+	} else {
+		result = db.Where("title like ?", "%"+searchValue+"%").
+			Or("artist like ?", "%"+searchValue+"%").
+			Or("album like ?", "%"+searchValue+"%").
+			Or("style like ?", "%"+searchValue+"%").
+			Scopes(order, pagination).
+			Find(&discs)
+	}
+	if err = result.Error; err != nil {
+		//TODO error handling
+		w.WriteHeader(400)
+		return
+	}
+
+	response, err := common.CreatePaginatedResponse(r, db, "discs", discs)
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+
+	json.NewEncoder(w).Encode(response)
 }
 
 //GetByID returns a record by id

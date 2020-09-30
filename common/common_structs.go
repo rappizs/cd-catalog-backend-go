@@ -1,4 +1,4 @@
-package structs
+package common
 
 import uuid "github.com/satori/go.uuid"
 

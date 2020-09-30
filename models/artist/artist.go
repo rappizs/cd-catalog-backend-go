@@ -1,11 +1,9 @@
 package artist
 
-import (
-	"cd-catalog-backend-go/structs"
-)
+import "cd-catalog-backend-go/common"
 
 //Artist is a representation of a Disc's artist
 type Artist struct {
-	structs.Base
+	common.Base
 	Name string `json:"name" gorm:"unique"`
 }
