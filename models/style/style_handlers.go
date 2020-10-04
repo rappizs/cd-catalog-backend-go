@@ -1,6 +1,7 @@
 package style
 
 import (
+	"cd-catalog-backend-go/common"
 	"cd-catalog-backend-go/database"
 	"encoding/json"
 	"errors"
@@ -21,8 +22,15 @@ func Init() {
 //GetAll returns every record
 func GetAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	searchValue := r.FormValue("search-value")
+	orderType := r.FormValue("type")
+	order := common.OrderBy("name", orderType)
+
 	styles := []Style{}
-	result := db.Find(&styles)
+	result := db.Where("name like ?", "%"+searchValue+"%").
+		Scopes(order).
+		Find(&styles)
+
 	if result.Error != nil {
 		//TODO error handling
 		w.WriteHeader(500)
