@@ -44,8 +44,10 @@ func CreatePaginatedResponse(r *http.Request, db *gorm.DB, table string, data in
 		pageCount = recordCount/int64(perPage) + 1
 	}
 
+	currPage, err := strconv.Atoi(r.FormValue("page"))
+
 	return map[string]interface{}{
-		"current_page": r.FormValue("page"),
+		"current_page": currPage,
 		"last_page":    pageCount,
 		"data":         data,
 	}, nil
