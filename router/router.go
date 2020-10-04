@@ -2,6 +2,7 @@ package router
 
 import (
 	"cd-catalog-backend-go/config"
+	"cd-catalog-backend-go/middleware"
 	"cd-catalog-backend-go/models/artist"
 	"cd-catalog-backend-go/models/disc"
 	"cd-catalog-backend-go/models/style"
@@ -17,6 +18,8 @@ func Start() {
 	initControllers()
 
 	r := mux.NewRouter()
+	r.Use(middleware.Cors)
+	r.Methods("OPTIONS")
 
 	r.HandleFunc("/api/discs", disc.GetAll).Methods("GET")
 	r.HandleFunc("/api/discs/{id}", disc.GetByID).Methods("GET")
