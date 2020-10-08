@@ -6,3 +6,8 @@ import uuid "github.com/satori/go.uuid"
 type Base struct {
 	ID uuid.UUID `json:"id" gorm:"type:uuid;primaryKey;"`
 }
+
+//ValidationError is a struct to be sent back as response body if a validation fails
+type ValidationError struct {
+	Errors []string `json:"errors"`
+}

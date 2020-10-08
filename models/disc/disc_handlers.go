@@ -8,16 +8,19 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-playground/validator"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
 	"gorm.io/gorm"
 )
 
 var db *gorm.DB
+var validate *validator.Validate
 
 //Init gets the db interface from database package
 func Init() {
 	db = database.GetDBInterface()
+	validate = validator.New()
 }
 
 //GetAll returns every record
@@ -87,7 +90,15 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	disc := Disc{}
 	json.NewDecoder(r.Body).Decode(&disc)
-	//TODO validation
+
+	err := validate.Struct(disc)
+	if err != nil {
+		validErr := common.CreateErrorStruct(err)
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(&validErr)
+		return
+	}
+
 	disc.ID = uuid.NewV4()
 	db.Create(disc)
 	json.NewEncoder(w).Encode(disc)
@@ -108,10 +119,18 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	//TODO validations
-	updatedDisc := Disc{}
-	json.NewDecoder(r.Body).Decode(&updatedDisc)
-	db.Model(&disc).Updates(&updatedDisc)
+	
+	json.NewDecoder(r.Body).Decode(&disc)
+
+	err = validate.Struct(disc)
+	if err != nil {
+		validErr := common.CreateErrorStruct(err)
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(&validErr)
+		return
+	}
+
+	db.Model(&disc).Updates(&disc)
 	db.Where("id = ?", id).First(&disc)
 	json.NewEncoder(w).Encode(disc)
 }

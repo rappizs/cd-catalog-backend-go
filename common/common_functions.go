@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
 
@@ -51,4 +52,16 @@ func CreatePaginatedResponse(r *http.Request, db *gorm.DB, table string, data in
 		"last_page":    pageCount,
 		"data":         data,
 	}, nil
+}
+
+//CreateErrorStruct creates a struct containing the validation errors
+func CreateErrorStruct(err error) ValidationError {
+	var errors []string
+	for _, err := range err.(validator.ValidationErrors) {
+		errors = append(errors, err.Field()+":"+err.Tag()+":"+err.Param())
+	}
+
+	validErr := ValidationError{}
+	validErr.Errors = errors
+	return validErr
 }
