@@ -94,6 +94,8 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	
+	json.NewDecoder(r.Body).Decode(&style)
 
 	err = validate.Struct(style)
 	if err != nil {
@@ -103,7 +105,6 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewDecoder(r.Body).Decode(&style)
 	db.Model(&style).Updates(&style)
 	db.Where("id = ?", id).First(&style)
 	json.NewEncoder(w).Encode(style)
