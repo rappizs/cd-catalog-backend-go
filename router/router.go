@@ -6,6 +6,7 @@ import (
 	"cd-catalog-backend-go/models/artist"
 	"cd-catalog-backend-go/models/disc"
 	"cd-catalog-backend-go/models/style"
+	"cd-catalog-backend-go/models/user"
 	"fmt"
 	"log"
 	"net/http"
@@ -39,6 +40,12 @@ func Start() {
 	r.HandleFunc("/api/styles/{id}", style.Update).Methods("PATCH")
 	r.HandleFunc("/api/styles/{id}", style.Delete).Methods("DELETE")
 
+	r.HandleFunc("/api/users", user.GetAll).Methods("GET")
+	r.HandleFunc("/api/users/{id}", user.GetByID).Methods("GET")
+	r.HandleFunc("/api/users", user.Register).Methods("POST")
+	r.HandleFunc("/api/users/login", user.Login).Methods("POST")
+	/*r.HandleFunc("/api/users/{id}", user.Delete).Methods("DELETE") */
+
 	fmt.Printf("Application listening on localhost, port: %v\n", config.ServerPort)
 	log.Fatal(http.ListenAndServe(":"+config.ServerPort, r))
 }
@@ -47,4 +54,5 @@ func initControllers() {
 	disc.Init()
 	artist.Init()
 	style.Init()
+	user.Init()
 }

@@ -5,6 +5,7 @@ import (
 	"cd-catalog-backend-go/models/artist"
 	"cd-catalog-backend-go/models/disc"
 	"cd-catalog-backend-go/models/style"
+	"cd-catalog-backend-go/models/user"
 )
 
 //All migrates all structs to the db
@@ -13,4 +14,5 @@ func All() {
 	db.AutoMigrate(&disc.Disc{})
 	db.AutoMigrate(&style.Style{})
 	db.AutoMigrate(&artist.Artist{})
+	db.AutoMigrate(&user.User{})
 }
