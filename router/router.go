@@ -20,6 +20,7 @@ func Start() {
 
 	r := mux.NewRouter()
 	r.Use(middleware.Cors)
+	r.Use(middleware.Auth)
 	r.Methods("OPTIONS")
 
 	r.HandleFunc("/api/discs", disc.GetAll).Methods("GET")

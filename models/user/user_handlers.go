@@ -3,6 +3,7 @@ package user
 import (
 	"cd-catalog-backend-go/common"
 	"cd-catalog-backend-go/database"
+	"cd-catalog-backend-go/jwt"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -109,6 +110,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
+	tokenString, err := jwt.Generate(user.ID)
+	result := map[string]interface{}{"jwt": tokenString}
+	json.NewEncoder(w).Encode(result)
 }
 
 /* //Update updates a record

@@ -13,4 +13,6 @@ const (
 	DBname = "CDStore"
 	//ServerPort ...
 	ServerPort = "8000"
+	//SecretKey ...
+	SecretKey = "cwLQ7VDHkO35APky8OeIdCul6rmt5Z3b"
 )
